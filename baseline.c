@@ -1,3 +1,5 @@
+//BASELINE VERSION OF THE WORD COUNT PROGRAM
+
 //Header files and definitions for the baseline word count program
 #include <stdio.h> //Gives you input/output functions like printf, fopen, fgets, etc.
 #include <string.h> //String functions like strcmp, strcpy, etc.
@@ -51,6 +53,12 @@ void process_text(char *text) {
     }
 }
 
+void free_word_list() {
+    for (int i = 0; i < word_count; i++) {
+        free(word_list[i].word);
+    }
+}
+
 int main() {
     char input[5000];
 
@@ -73,5 +81,6 @@ int main() {
     printf("Execution time: %f seconds\n", time_taken);
 
     return 0;
+    free_word_list();
 }
 
