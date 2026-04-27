@@ -5,13 +5,14 @@
 #include <string.h> //String functions like strcmp, strcpy, etc.
 #include <ctype.h> //Character handling functions like tolower.
 #include <time.h> //For finding performance speed
+#include <stdlib.h> //For malloc and free
 
 #define MAX_WORDS 1000 //Max number of unique words we can store 
 #define MAX_WORD_LEN 100 //Max length of a single word
 
 
 typedef struct {
-    char word[MAX_WORD_LEN];
+    char *word;
     int count;
 } WordEntry;
 
@@ -25,8 +26,7 @@ void to_lowercase(char *word) {
     }
 }
 
-// Add or update word 
-//linear search)
+// Add or update word (linear search baseline)
 void add_word(const char *word) {
     for (int i = 0; i < word_count; i++) {
         if (strcmp(word_list[i].word, word) == 0) {
@@ -36,7 +36,7 @@ void add_word(const char *word) {
     }
 
     if (word_count < MAX_WORDS) {
-        strcpy(word_list[word_count].word, word);
+        word_list[word_count].word = strdup(word);  // allocate memory
         word_list[word_count].count = 1;
         word_count++;
     }
@@ -44,7 +44,7 @@ void add_word(const char *word) {
 
 // Process input text
 void process_text(char *text) {
-    char *token = strtok(text, " \t\n\r,.!?;:\"()[]{}<>"); //strtok splits the text into tokens based on the specified delimiters (spaces, punctuation, etc.)
+    char *token = strtok(text, " \t\n\r,.!?;:\"()[]{}<>");
 
     while (token != NULL) {
         to_lowercase(token);
@@ -53,6 +53,7 @@ void process_text(char *text) {
     }
 }
 
+// Free allocated memory
 void free_word_list() {
     for (int i = 0; i < word_count; i++) {
         free(word_list[i].word);
