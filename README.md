@@ -16,4 +16,27 @@ The baseline implementation design for this project will read a log file line by
 In my project, I will reduce memory allocation by replacing per-word malloc calls with a preallocated memory pool. Instead of allocating a new node for every unique word, the program will reserve a large contiguous block of memory at startup. By doing this, we can reduce heap fragmentation, eliminate allocation overhead, and make the memory usage more predictive. 
 I can replace the baseline linked list with a hash table implementation using a contiguous array. This would probably reduce lookup time making the time complexity change from O(n) to now O(1) on average. This will eliminate pointer chasing between scattered nodes in memory. Having all entries be stored in a single array allows for improved spatial locality. This makes the CPU cache be more able to store multiple entries per cache line which reduces cache misses during word lookups. To reduce overhead inside the main processing loop we need to minimize unnecessary function calls and keep hot-path logic inline where possible. Critical operations (like string comparison) will be simplified to reduce stack overhead. This will improve instructions throughout and reduce CPU pipeline stalls caused by excessive branching or function call overhead. Lastly, I can improve cache efficiency by ensuring that the hash table and associated data structures are stored contiguously in memory. If I do so, this would increase spatial locality, which allows for multiple entries to be loaded into a single cache line. Also, sequential probing in case of collision will be better with CPU prefetching behavior. This is because it will reduce cache miss penalties
 
+# How to test and run files
+Create a text file yes "hello world this is a performance test" | head -n 100000 > big.txt
+After I edit I need to compile: gcc baseline.c -o baseline   AND     gcc -O2 optimized.c -o optimized
+If I want to manually add lines I can type in text and then press ctrl d to enter all of the text
 
+Test and check for optimization on files (like the big.txt one I created)
+ ./baseline < big.txt
+ ./optimized < big.txt
+ *** To just run it normally you would do something like ./optimized only.
+
+ # Expected Output Example
+Enter text (press Ctrl+D when done):
+
+Word Frequencies:
+a: 100000
+hello: 100000
+is: 100000
+test: 100000
+performance: 100000
+world: 100000
+this: 100000
+
+Total unique words: 7
+Execution time: 0.042532 seconds
