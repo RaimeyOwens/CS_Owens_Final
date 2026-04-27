@@ -39,4 +39,8 @@ world: 100000
 this: 100000
 
 Total unique words: 7
+<<<<<<< HEAD
 Execution time: 0.042532 seconds
+=======
+Execution time: 0.042532 seconds
+>>>>>>> bb9edbc45eb48213236daec35286945ade49fe47
