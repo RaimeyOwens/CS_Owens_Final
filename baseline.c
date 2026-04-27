@@ -1,6 +1,5 @@
 //Header files and definitions for the baseline word count program
 #include <stdio.h> //Gives you input/output functions like printf, fopen, fgets, etc.
-#include <stdlib.h> //General utilities 
 #include <string.h> //String functions like strcmp, strcpy, etc.
 #include <ctype.h> //Character handling functions like tolower.
 
@@ -16,15 +15,16 @@ typedef struct {
 WordEntry word_list[MAX_WORDS];
 int word_count = 0;
 
+// Convert word to lowercase
 void to_lowercase(char *word) {
     for (int i = 0; word[i]; i++) {
         word[i] = tolower(word[i]);
     }
 }
 
-// Add or update word
+// Add or update word 
+//linear search)
 void add_word(const char *word) {
-    // Linear search
     for (int i = 0; i < word_count; i++) {
         if (strcmp(word_list[i].word, word) == 0) {
             word_list[i].count++;
@@ -32,16 +32,16 @@ void add_word(const char *word) {
         }
     }
 
-    // Add new word
     if (word_count < MAX_WORDS) {
         strcpy(word_list[word_count].word, word);
         word_list[word_count].count = 1;
         word_count++;
     }
 }
-// Process a line of text
-void process_line(char *line) {
-    char *token = strtok(line, " \t\n\r,.!?;:\"()[]{}<>");
+
+// Process input text
+void process_text(char *text) {
+    char *token = strtok(text, " \t\n\r,.!?;:\"()[]{}<>"); //strtok splits the text into tokens based on the specified delimiters (spaces, punctuation, etc.)
 
     while (token != NULL) {
         to_lowercase(token);
@@ -49,32 +49,20 @@ void process_line(char *line) {
         token = strtok(NULL, " \t\n\r,.!?;:\"()[]{}<>");
     }
 }
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        printf("Usage: %s <file>\n", argv[0]);
-        return 1;
-    }
 
-    FILE *file = fopen(argv[1], "r");
-    if (!file) {
-        printf("Error opening file\n");
-        return 1;
-    }
+int main() {
+    char input[5000];
 
-    char buffer[1024];
+    printf("Enter text:\n");
+    //allows the user to input multiple lines of text. The fgets function reads a line of input from stdin and stores it in the input buffer. The loop continues until there are no more lines to read.
+    while (fgets(input, sizeof(input), stdin)) {
+    process_text(input);
+}
 
-    while (fgets(buffer, sizeof(buffer), file)) {
-        process_line(buffer);
-    }
-
-    fclose(file);
-
-    // Print results
+    printf("\nWord Frequencies:\n");
     for (int i = 0; i < word_count; i++) {
         printf("%s: %d\n", word_list[i].word, word_list[i].count);
     }
-
-    printf("\nTotal unique words: %d\n", word_count);
 
     return 0;
 }
