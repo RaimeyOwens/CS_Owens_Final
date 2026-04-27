@@ -2,6 +2,7 @@
 #include <stdio.h> //Gives you input/output functions like printf, fopen, fgets, etc.
 #include <string.h> //String functions like strcmp, strcpy, etc.
 #include <ctype.h> //Character handling functions like tolower.
+#include <time.h> //For finding performance speed
 
 #define MAX_WORDS 1000 //Max number of unique words we can store 
 #define MAX_WORD_LEN 100 //Max length of a single word
@@ -53,16 +54,24 @@ void process_text(char *text) {
 int main() {
     char input[5000];
 
-    printf("Enter text:\n");
+    printf("Enter text (press Ctrl+D when done):\n");
+    clock_t start = clock();   // START TIMER
     //allows the user to input multiple lines of text. The fgets function reads a line of input from stdin and stores it in the input buffer. The loop continues until there are no more lines to read.
     while (fgets(input, sizeof(input), stdin)) {
     process_text(input);
 }
+    clock_t end = clock();     // END TIMER
+
+    double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
 
     printf("\nWord Frequencies:\n");
     for (int i = 0; i < word_count; i++) {
         printf("%s: %d\n", word_list[i].word, word_list[i].count);
     }
 
+    printf("\nTotal unique words: %d\n", word_count);
+    printf("Execution time: %f seconds\n", time_taken);
+
     return 0;
 }
+
