@@ -16,9 +16,21 @@ The baseline implementation design for this project will read a log file line by
 In my project, I will reduce memory allocation by replacing per-word malloc calls with a preallocated memory pool. Instead of allocating a new node for every unique word, the program will reserve a large contiguous block of memory at startup. By doing this, we can reduce heap fragmentation, eliminate allocation overhead, and make the memory usage more predictive. 
 I can replace the baseline linked list with a hash table implementation using a contiguous array. This would probably reduce lookup time making the time complexity change from O(n) to now O(1) on average. This will eliminate pointer chasing between scattered nodes in memory. Having all entries be stored in a single array allows for improved spatial locality. This makes the CPU cache be more able to store multiple entries per cache line which reduces cache misses during word lookups. To reduce overhead inside the main processing loop we need to minimize unnecessary function calls and keep hot-path logic inline where possible. Critical operations (like string comparison) will be simplified to reduce stack overhead. This will improve instructions throughout and reduce CPU pipeline stalls caused by excessive branching or function call overhead. Lastly, I can improve cache efficiency by ensuring that the hash table and associated data structures are stored contiguously in memory. If I do so, this would increase spatial locality, which allows for multiple entries to be loaded into a single cache line. Also, sequential probing in case of collision will be better with CPU prefetching behavior. This is because it will reduce cache miss penalties
 
+# Performance 
+Performance testing on large datasets shows that the optimal version has a much greater performance speed in comparison to the baseline version. This is shown as the size of the files increases, the ratio gap of the baseline to optimized speed grows larger. These results show that algorithmic improvements and the memory-aware design have a much better impact on the performance overall. 
+
 # How to test and run files
 Create a text file yes "hello world this is a performance test" | head -n 100000 > big.txt
+Create more text files (large AND diverse):
+head -n 500000 big.txt > huge.txt
+wget https://www.gutenberg.org/files/2600/2600-0.txt -O war_and_peace.txt
+wget https://www.gutenberg.org/files/1342/1342-0.txt -O pride.txt
+
+
 After I edit I need to compile: gcc baseline.c -o baseline   AND     gcc -O2 optimized.c -o optimized
+Run these seperately:
+gcc -Wall baseline.c -o baseline
+gcc -Wall optimized.c -o optimized
 If I want to manually add lines I can type in text and then press ctrl d to enter all of the text
 
 Test and check for optimization on files (like the big.txt one I created)
@@ -44,3 +56,32 @@ Execution time: 0.042532 seconds
 =======
 Execution time: 0.042532 seconds
 >>>>>>> bb9edbc45eb48213236daec35286945ade49fe47
+
+# Time Tables
+To get the best understanding of performance speeds use the war_and_peace.txt file to test the optimized and baseline code. 
+
+Times in all files
+
+Input Size and Diversity	Baseline Time (seconds)	Optimized Time (seconds)   Speedup	
+Big Text
+(100k lines)
+No Diversity	                0.056334	          0.062222	                0.905 x
+Huge Text
+(200k lines)
+No Diversity	                0.066283	          0.083060	                0.798 x
+Pride Text
+(14k lines)
+Diversity	                    0.282637	          0.019583	               14.432 x
+War and Peace Text
+(66k lines)
+Diversity	                     1.40417	            0.091938	            15.273 x
+
+
+
+Optimization level with war_and_peace.txt file
+
+Optimization Level	Execution Time                 Speedup vs O0
+                     (seconds)	                      
+O0	                0.101212	                        1 x
+O2	                0.072674	                        1.39 x
+O3	                0.066091	                         1.53 x
